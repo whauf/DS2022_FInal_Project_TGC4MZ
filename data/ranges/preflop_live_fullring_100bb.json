@@ -1,0 +1,6 @@
+{
+    "BTN": {"open": ["22","33","44","55","66","77","88","99","TT","JJ","QQ","KK","AA","A2s","A3s","A4s","A5s","A6s","A7s","A8s","A9s","ATs","AJs","AQs","AKs","K2s","K3s","K4s","K5s","K6s","K7s","K8s","K9s","KTs","KQs","Q3s","Q4s","Q5s","Q6s","Q7s","Q8s","Q9s","QTs","J5s","J6s","J7s","J8s","J9s","JTs","T6s","T7s","T8s","T9s","98s","87s","76s","65s","54s","A2o","A3o","A4o","A5o","A6o","A7o","A8o","A9o","ATo","AJo","AQo","AKo","K8o","K9o","KTo","KQo","Q9o","QTo","QJo","J8o","J9o","JTo","T8o","T9o"]},
+    "CO": {"open": ["44","55","66","77","88","99","TT","JJ","QQ","KK","AA","A2s","A3s","A4s","A5s","A6s","A7s","A8s","A9s","ATs","AJs","AQs","AKs","K4s","K5s","K6s","K7s","K8s","K9s","KTs","KQs","Q6s","Q7s","Q8s","Q9s","QTs","J8s","J9s","JTs","T8s","T9s","98s","87s","76s","65s","54s","A9o","ATo","AJo","AQo","KTo","KJo","KQo","QTo","QJo","JTo"]},
+    "HJ": {"open": ["55","66","77","88","99","TT","JJ","QQ","KK","AA","A2s","A3s","A4s","A5s","A6s","A7s","A8s","A9s","ATs","AJs","AQs","AKs","K6s","K7s","K8s","K9s","KTs","Q9s","QTs","J9s","JTs","T8s","98s","87s","76s","ATo","AJo","AQo","KTo","KJo","QTo"]},
+    "UTG": {"open": ["88","99","TT","JJ","QQ","KK","AA","A4s","A5s","AJs","AQs","AKs","JTs","AQo","KQo"]}
+}

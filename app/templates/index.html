@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Poker Advisor</title>
+    <style>
+        :root {
+            --bg-dark: #050910;
+            --bg-panel: #111827;
+            --bg-panel-soft: #0b1220;
+            --accent: #22c55e;
+            --accent-soft: #16a34a;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --accent-gold: #eab308;
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --border-subtle: #1f2937;
+            --card-bg: #f9fafb;
+            --card-border: #d1d5db;
+            --radius-lg: 14px;
+            --radius-md: 10px;
+            --shadow-soft: 0 18px 40px rgba(0,0,0,0.55);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #1f2937 0, #020617 52%, #020617 100%);
+            color: var(--text-main);
+        }
+
+        h1, h2, h3, h4 { margin: 0; font-weight: 600; }
+        p { margin: 0; }
+        a { color: inherit; }
+
+        .app-shell {
+            max-width: 1200px;
+            margin: 30px auto 40px;
+            padding: 0 16px;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 18px;
+        }
+
+        .app-title {
+            font-size: 30px;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .app-title span.logo-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: radial-gradient(circle at 30% 20%, #22c55e, #15803d);
+            color: #ecfdf5;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .app-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .layout-main {
+            display: grid;
+            grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+            gap: 18px;
+        }
+
+        @media (max-width: 900px) {
+            .layout-main { grid-template-columns: minmax(0, 1fr); }
+        }
+
+        .panel {
+            background: linear-gradient(135deg, rgba(15,23,42,0.96), rgba(15,23,42,0.86));
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(31,41,55,0.9);
+            box-shadow: var(--shadow-soft);
+            padding: 18px 18px 16px;
+        }
+
+        .panel + .panel { margin-top: 14px; }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .panel-header h2,
+        .panel-header h3 { font-size: 16px; }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: 1px solid rgba(148,163,184,0.6);
+            color: #e5e7eb;
+            background: radial-gradient(circle at top, rgba(148,163,184,0.42), transparent);
+        }
+
+        .badge.green {
+            border-color: rgba(34,197,94,0.7);
+            color: #bbf7d0;
+        }
+
+        .section-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
+        form { display: flex; flex-direction: column; gap: 8px; }
+
+        label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .field-group { display: flex; gap: 10px; }
+        .field { flex: 1; display: flex; flex-direction: column; }
+
+        input, select {
+            font: inherit;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            background: #020617;
+            color: var(--text-main);
+            padding: 7px 9px;
+            outline: none;
+            transition: border-color 0.14s ease, box-shadow 0.14s ease, background 0.15s ease;
+        }
+        input::placeholder { color: #6b7280; }
+
+        input:focus, select:focus {
+            border-color: var(--accent-soft);
+            box-shadow: 0 0 0 1px rgba(34,197,94,0.35);
+            background: #020617;
+        }
+
+        button {
+            border: none;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: radial-gradient(circle at 10% 0, var(--accent), var(--accent-soft));
+            color: #ecfdf5;
+            margin-top: 6px;
+            align-self: flex-start;
+            transition: transform 0.08s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+            box-shadow: 0 8px 20px rgba(34,197,94,0.35);
+        }
+
+        button span.icon { font-size: 15px; }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 26px rgba(34,197,94,0.45);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 14px rgba(34,197,94,0.4);
+        }
+
+        .hint {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .table-panel {
+            display: grid;
+            grid-template-rows: auto auto minmax(0,1fr);
+            gap: 10px;
+        }
+
+        .table-surface {
+            background: radial-gradient(circle at center, #047857 0, #064e3b 34%, #020617 90%);
+            border-radius: var(--radius-lg);
+            border: 1px solid #22c55e33;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+            padding: 14px 16px 14px;
+        }
+
+        .table-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+
+        .table-title { font-size: 15px; }
+
+        .street-pill {
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            border: 1px solid rgba(15,23,42,0.9);
+            background: rgba(15,23,42,0.92);
+            color: var(--text-muted);
+        }
+
+        .table-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+            gap: 16px;
+            align-items: center;
+        }
+
+        @media (max-width: 800px) {
+            .table-layout { grid-template-columns: minmax(0, 1fr); }
+        }
+
+        .hero-block h3 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #cbd5f5;
+            margin-bottom: 4px;
+        }
+
+        .card-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .card-tile {
+            position: relative;
+            width: 42px;
+            height: 58px;
+            border-radius: 7px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 16px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 5px 4px 4px;
+        }
+
+        .card-tile.red { color: #b91c1c; }
+        .card-tile.black { color: #020617; }
+
+        .card-rank { font-weight: 600; font-size: 16px; }
+        .card-suit { font-size: 14px; }
+
+        .card-corner-bottom {
+            align-self: flex-end;
+            font-size: 11px;
+            opacity: 0.85;
+        }
+
+        .card-back-placeholder {
+            width: 42px;
+            height: 58px;
+            border-radius: 7px;
+            border: 1px dashed rgba(15,23,42,0.7);
+            background: rgba(15,23,42,0.55);
+        }
+
+        .board-block h3 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #d1fae5;
+            margin-bottom: 5px;
+        }
+
+        .board-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .street-label-chip {
+            font-size: 11px;
+            padding: 1px 6px;
+            border-radius: 999px;
+            border: 1px solid rgba(15,23,42,0.9);
+            background: rgba(15,23,42,0.92);
+            color: #d1fae5;
+            margin-right: 4px;
+        }
+
+        .analysis-panel {
+            background: var(--bg-panel);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(31,41,55,0.96);
+            box-shadow: var(--shadow-soft);
+            padding: 12px 14px 12px;
+        }
+
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .analysis-header h3 { font-size: 14px; }
+
+        .action-chip {
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .action-chip.bet {
+            background: rgba(22,163,74,0.2);
+            border: 1px solid rgba(34,197,94,0.7);
+            color: #bbf7d0;
+        }
+
+        .action-chip.check {
+            background: rgba(37,99,235,0.18);
+            border: 1px solid rgba(59,130,246,0.8);
+            color: #dbeafe;
+        }
+
+        .action-chip.fold {
+            background: rgba(248,113,113,0.16);
+            border: 1px solid rgba(248,113,113,0.8);
+            color: #fee2e2;
+        }
+
+        .equity-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .equity-row span.value {
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+
+        .hand-label-line {
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .hand-label-line strong { font-weight: 600; }
+
+        .draws-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .draw-group {
+            background: var(--bg-panel-soft);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(30,64,175,0.6);
+            padding: 8px 9px 7px;
+        }
+
+        .draw-group-title {
+            font-size: 12px;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .draw-group-title span.label {
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 500;
+        }
+
+        .draw-group-title span.count {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .draw-entry {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            line-height: 1.35;
+        }
+
+        .draw-entry strong { color: #e5e7eb; }
+
+        .muted { color: var(--text-muted); }
+
+        .no-draws {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        details.debug { margin-top: 8px; font-size: 11px; }
+        details.debug summary { cursor: pointer; color: #9ca3af; }
+
+        pre.json-dump {
+            margin-top: 5px;
+            background: #020617;
+            color: #a7f3d0;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            max-height: 180px;
+            overflow: auto;
+            border: 1px solid #111827;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Session tracker */
+
+        .session-stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 6px 12px;
+            font-size: 11px;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .session-stats-row span.value {
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+
+        .session-net.positive { color: #4ade80; }
+        .session-net.negative { color: #fca5a5; }
+
+        .session-form { margin-top: 6px; }
+
+        /* History panel */
+
+        .history-list {
+            margin-top: 8px;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            border-radius: 10px;
+            border: 1px solid rgba(31,41,55,0.96);
+            background: radial-gradient(circle at top left, rgba(15,23,42,0.94), #020617);
+            padding: 7px 8px;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .history-item-title {
+            font-weight: 500;
+            color: #e5e7eb;
+        }
+
+        .history-item-net {
+            font-weight: 600;
+        }
+
+        .history-item-net.positive { color: #4ade80; }
+        .history-item-net.negative { color: #fca5a5; }
+
+        .history-item-body {
+            margin-top: 3px;
+            color: var(--text-muted);
+            line-height: 1.35;
+        }
+
+        .history-list.empty {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* Betting block */
+        .betting-block {
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(31,41,55,0.8);
+            font-size: 12px;
+        }
+
+        .bet-main-line {
+            margin-bottom: 4px;
+        }
+
+        .bet-options-list {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .bet-options-list ul {
+            padding-left: 16px;
+            margin: 2px 0 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+    <header class="app-header">
+        <div>
+            <div class="app-title">
+                <span class="logo-chip">P</span>
+                <span>Poker Advisor</span>
+            </div>
+            <p class="app-subtitle">Step through preflop → flop → turn → river with live equities, draw analysis & bet sizing.</p>
+        </div>
+        <span class="badge green">Multi-Street</span>
+    </header>
+
+    <main class="layout-main">
+        <!-- LEFT: Controls -->
+        <section>
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Preflop</h2>
+                    <span class="badge">Step 1</span>
+                </div>
+                <p class="hint">Enter your starting hand and context. Then continue through the streets.</p>
+
+                <form id="preflop-form">
+                    <div class="field">
+                        <label>Hand (required)</label>
+                        <input required type="text" name="hand" placeholder="As Kd">
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field">
+                            <label>Stack Size (bb)</label>
+                            <input type="number" name="stack" placeholder="100">
+                        </div>
+                        <div class="field">
+                            <label>Position</label>
+                            <input type="text" name="position" placeholder="CO / BTN / SB">
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field">
+                            <label>Number of Players</label>
+                            <input type="number" name="players" placeholder="6">
+                        </div>
+                        <div class="field">
+                            <label>Facing Bets</label>
+                            <input type="text" name="facing_bets" placeholder="CO 3bet">
+                        </div>
+                    </div>
+
+                    <button type="submit">
+                        <span class="icon">🎯</span>
+                        Get Preflop Advice
+                    </button>
+                </form>
+
+                <div id="preflop-summary" class="hidden" style="margin-top:10px;">
+                    <div class="section-label">Preflop Recommendation</div>
+                    <div id="preflop-text" style="font-size:12px;"></div>
+
+                    <details class="debug" id="preflop-debug">
+                        <summary>Raw JSON (debug)</summary>
+                        <pre class="json-dump" id="preflop-json"></pre>
+                    </details>
+                </div>
+            </div>
+
+            <!-- FLOP -->
+            <div class="panel hidden" id="flop-panel">
+                <div class="panel-header">
+                    <h3>Flop</h3>
+                    <span class="badge">Step 2</span>
+                </div>
+
+                <form id="flop-form">
+                    <input type="hidden" name="hero_cards" id="hero_flop">
+                    <input type="hidden" name="board" id="board_flop">
+                    <input type="hidden" name="street" value="flop">
+
+                    <div class="field">
+                        <label>Flop Cards</label>
+                        <input type="text" id="flop_input" placeholder="Ah 5c Td">
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field">
+                            <label>Pot Size</label>
+                            <input type="number" name="pot" placeholder="20">
+                        </div>
+                        <div class="field">
+                            <label>Facing Action</label>
+                            <input type="text" name="action" placeholder="villain bets 2x pot">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Number of Opponents (optional)</label>
+                        <input type="number" name="opponents" placeholder="1">
+                    </div>
+
+                    <button type="submit">
+                        <span class="icon">📉</span>
+                        Get Flop Advice
+                    </button>
+                </form>
+            </div>
+
+            <!-- TURN -->
+            <div class="panel hidden" id="turn-panel">
+                <div class="panel-header">
+                    <h3>Turn</h3>
+                    <span class="badge">Step 3</span>
+                </div>
+
+                <form id="turn-form">
+                    <input type="hidden" name="hero_cards" id="hero_turn">
+                    <input type="hidden" name="board" id="board_turn">
+                    <input type="hidden" name="street" value="turn">
+
+                    <div class="field">
+                        <label>Turn Card</label>
+                        <input type="text" id="turn_input" placeholder="Jc">
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field">
+                            <label>Pot Size</label>
+                            <input type="number" name="pot" placeholder="60">
+                        </div>
+                        <div class="field">
+                            <label>Facing Action</label>
+                            <input type="text" name="action" placeholder="villain checks">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Number of Opponents (optional)</label>
+                        <input type="number" name="opponents" placeholder="1">
+                    </div>
+
+                    <button type="submit">
+                        <span class="icon">📈</span>
+                        Get Turn Advice
+                    </button>
+                </form>
+            </div>
+
+            <!-- RIVER -->
+            <div class="panel hidden" id="river-panel">
+                <div class="panel-header">
+                    <h3>River</h3>
+                    <span class="badge">Step 4</span>
+                </div>
+
+                <form id="river-form">
+                    <input type="hidden" name="hero_cards" id="hero_river">
+                    <input type="hidden" name="board" id="board_river">
+                    <input type="hidden" name="street" value="river">
+
+                    <div class="field">
+                        <label>River Card</label>
+                        <input type="text" id="river_input" placeholder="Ac">
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field">
+                            <label>Pot Size</label>
+                            <input type="number" name="pot" placeholder="120">
+                        </div>
+                        <div class="field">
+                            <label>Facing Action</label>
+                            <input type="text" name="action" placeholder="villain jams">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Number of Opponents (optional)</label>
+                        <input type="number" name="opponents" placeholder="1">
+                    </div>
+
+                    <button type="submit">
+                        <span class="icon">🚀</span>
+                        Get River Advice
+                    </button>
+                </form>
+            </div>
+
+            <!-- HAND HISTORY -->
+            <div class="panel" id="history-panel">
+                <div class="panel-header">
+                    <h3>Hand History</h3>
+                    <span class="badge">This session</span>
+                </div>
+                <p class="hint">Hands you record in the tracker will appear here. Newest at the top.</p>
+                <div id="history-list" class="history-list empty">
+                    <p>No hands logged yet.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT: Table + Analysis + Session -->
+        <section class="table-panel">
+            <div class="table-surface">
+                <div class="table-top-row">
+                    <div class="table-title">Virtual Table</div>
+                    <span class="street-pill" id="street-pill">Awaiting Preflop…</span>
+                </div>
+
+                <div class="table-layout">
+                    <div class="hero-block">
+                        <h3>Your Hand</h3>
+                        <div class="card-row" id="hero-cards-row">
+                            <div class="card-back-placeholder"></div>
+                            <div class="card-back-placeholder"></div>
+                        </div>
+                    </div>
+                    <div class="board-block">
+                        <h3>Board</h3>
+                        <div class="board-row">
+                            <span class="street-label-chip">Flop</span>
+                            <div class="card-row" id="board-flop-row">
+                                <div class="card-back-placeholder"></div>
+                                <div class="card-back-placeholder"></div>
+                                <div class="card-back-placeholder"></div>
+                            </div>
+                        </div>
+                        <div class="board-row" style="margin-top:5px;">
+                            <span class="street-label-chip">Turn</span>
+                            <div class="card-row" id="board-turn-row">
+                                <div class="card-back-placeholder"></div>
+                            </div>
+                        </div>
+                        <div class="board-row" style="margin-top:5px;">
+                            <span class="street-label-chip">River</span>
+                            <div class="card-row" id="board-river-row">
+                                <div class="card-back-placeholder"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analysis-panel">
+                <div class="analysis-header">
+                    <h3 id="analysis-title">No street analyzed yet</h3>
+                    <span class="action-chip" id="action-chip" style="display:none;"></span>
+                </div>
+
+                <div class="equity-row" id="equity-row" style="display:none;">
+                    <div>Hero equity: <span class="value" id="hero-equity"></span></div>
+                    <div>Villain equity: <span class="value" id="villain-equity"></span></div>
+                    <div>Tie: <span class="value" id="tie-equity"></span></div>
+                </div>
+
+                <div class="hand-label-line" id="hand-label-line" style="display:none;">
+                    Current hand: <strong id="hand-label"></strong>
+                </div>
+
+                <div id="draws-container">
+                    <p class="no-draws" id="no-draws-message">Run a flop, turn, or river spot to see draws & outs.</p>
+                    <div class="draws-layout hidden" id="draws-layout"></div>
+                </div>
+
+                <div class="betting-block" id="betting-block" style="display:none;">
+                    <div class="bet-main-line" id="bet-main-line"></div>
+                    <div class="bet-options-list" id="bet-options-list"></div>
+                </div>
+
+                <details class="debug hidden" id="postflop-debug">
+                    <summary>Raw JSON (debug)</summary>
+                    <pre class="json-dump" id="postflop-json"></pre>
+                </details>
+            </div>
+
+            <!-- SESSION TRACKER -->
+            <div class="analysis-panel">
+                <div class="analysis-header">
+                    <h3>Session Tracker</h3>
+                    <span class="badge">Per session</span>
+                </div>
+
+                <div class="session-stats-row">
+                    <div>Hands logged: <span class="value" id="session-hands">0</span></div>
+                    <div>Total invested: <span class="value" id="session-invested">$0.00</span></div>
+                    <div>Total won: <span class="value" id="session-won">$0.00</span></div>
+                    <div>Net: <span class="value session-net" id="session-net">$0.00</span></div>
+                </div>
+
+                <div class="session-form">
+                    <div class="field-group">
+                        <div class="field">
+                            <label>Invested this hand</label>
+                            <input type="number" step="0.01" id="session-invest-input" placeholder="e.g. 25">
+                        </div>
+                        <div class="field">
+                            <label>Won back (0 if fold)</label>
+                            <input type="number" step="0.01" id="session-won-input" placeholder="e.g. 62">
+                        </div>
+                    </div>
+
+                    <button type="button" id="session-record-btn">
+                        <span class="icon">💾</span>
+                        Record Result
+                    </button>
+                    <p class="hint">Session totals reset when you refresh this page. Recording a hand also resets the table for a new one.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    function parseCardCode(code) {
+        if (!code) return null;
+        code = code.trim();
+        if (code.length !== 2) return null;
+        const rank = code[0].toUpperCase();
+        const suit = code[1].toLowerCase();
+        const suitSymbols = { h: "♥", d: "♦", c: "♣", s: "♠" };
+        if (!suitSymbols[suit]) return null;
+        return {
+            code: rank + suit,
+            rank,
+            suit,
+            symbol: suitSymbols[suit],
+        };
+    }
+
+    function parseCardStringToCodes(str) {
+        if (!str) return [];
+        const tokens = str.replace(/,/g, " ").split(/\s+/).filter(Boolean);
+        const codes = [];
+        for (const t of tokens) {
+            const parsed = parseCardCode(t);
+            if (parsed) codes.push(parsed.code);
+        }
+        return codes;
+    }
+
+    function createCardElement(cardCode) {
+        const parsed = parseCardCode(cardCode);
+        if (!parsed) return null;
+
+        const cardDiv = document.createElement("div");
+        const isRed = parsed.suit === "h" || parsed.suit === "d";
+        cardDiv.className = "card-tile " + (isRed ? "red" : "black");
+
+        const top = document.createElement("div");
+        const rankSpan = document.createElement("div");
+        rankSpan.className = "card-rank";
+        rankSpan.textContent = parsed.rank;
+        const suitSpan = document.createElement("div");
+        suitSpan.className = "card-suit";
+        suitSpan.textContent = parsed.symbol;
+        top.appendChild(rankSpan);
+        top.appendChild(suitSpan);
+
+        const bottom = document.createElement("div");
+        bottom.className = "card-corner-bottom";
+        bottom.textContent = parsed.symbol + " " + parsed.rank;
+
+        cardDiv.appendChild(top);
+        cardDiv.appendChild(bottom);
+        return cardDiv;
+    }
+
+    function renderCardRow(container, codes, placeholderCount) {
+        container.innerHTML = "";
+        if (codes && codes.length) {
+            codes.forEach(c => {
+                const el = createCardElement(c);
+                if (el) container.appendChild(el);
+            });
+        } else if (placeholderCount) {
+            for (let i = 0; i < placeholderCount; i++) {
+                const ph = document.createElement("div");
+                ph.className = "card-back-placeholder";
+                container.appendChild(ph);
+            }
+        }
+    }
+
+    let heroHandCodes = [];
+    let flopBoardCodes = [];
+    let turnCardCode = "";
+    let riverCardCode = "";
+    let lastPostflopJson = null;
+
+    let sessionStats = {
+        hands: 0,
+        totalInvested: 0,
+        totalWon: 0,
+    };
+
+    const handHistory = [];
+
+    const streetPill = document.getElementById("street-pill");
+
+    const heroCardsRow = document.getElementById("hero-cards-row");
+    const boardFlopRow = document.getElementById("board-flop-row");
+    const boardTurnRow = document.getElementById("board-turn-row");
+    const boardRiverRow = document.getElementById("board-river-row");
+
+    const analysisTitle = document.getElementById("analysis-title");
+    const actionChip = document.getElementById("action-chip");
+    const equityRow = document.getElementById("equity-row");
+    const heroEquityEl = document.getElementById("hero-equity");
+    const villainEquityEl = document.getElementById("villain-equity");
+    const tieEquityEl = document.getElementById("tie-equity");
+    const handLabelLine = document.getElementById("hand-label-line");
+    const handLabelEl = document.getElementById("hand-label");
+    const noDrawsMessage = document.getElementById("no-draws-message");
+    const drawsLayout = document.getElementById("draws-layout");
+    const postflopDebug = document.getElementById("postflop-debug");
+    const postflopJson = document.getElementById("postflop-json");
+
+    const bettingBlock = document.getElementById("betting-block");
+    const betMainLine = document.getElementById("bet-main-line");
+    const betOptionsList = document.getElementById("bet-options-list");
+
+    const preflopSummary = document.getElementById("preflop-summary");
+    const preflopText = document.getElementById("preflop-text");
+    const preflopJson = document.getElementById("preflop-json");
+    const preflopDebug = document.getElementById("preflop-debug");
+
+    const flopPanel = document.getElementById("flop-panel");
+    const turnPanel = document.getElementById("turn-panel");
+    const riverPanel = document.getElementById("river-panel");
+
+    const heroFlopHidden = document.getElementById("hero_flop");
+    const boardFlopHidden = document.getElementById("board_flop");
+    const heroTurnHidden = document.getElementById("hero_turn");
+    const boardTurnHidden = document.getElementById("board_turn");
+    const heroRiverHidden = document.getElementById("hero_river");
+    const boardRiverHidden = document.getElementById("board_river");
+
+    const historyList = document.getElementById("history-list");
+
+    const sessionHandsEl = document.getElementById("session-hands");
+    const sessionInvestedEl = document.getElementById("session-invested");
+    const sessionWonEl = document.getElementById("session-won");
+    const sessionNetEl = document.getElementById("session-net");
+    const sessionInvestInput = document.getElementById("session-invest-input");
+    const sessionWonInput = document.getElementById("session-won-input");
+    const sessionRecordBtn = document.getElementById("session-record-btn");
+
+    function setStreetLabel(label) {
+        streetPill.textContent = label;
+    }
+
+    function formatPct(x) {
+        if (x == null) return null;
+        return (x * 100).toFixed(1) + "%";
+    }
+
+    function titleCase(s) {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
+    function renderActionChip(action) {
+        if (!action) {
+            actionChip.style.display = "none";
+            return;
+        }
+        const a = action.toLowerCase();
+        actionChip.style.display = "inline-flex";
+        actionChip.textContent = a.toUpperCase();
+        actionChip.className = "action-chip " + (a === "bet" ? "bet" : a === "check" ? "check" : "fold");
+    }
+
+    function renderBetting(data) {
+        const rec = data.bet_recommendation;
+        const opts = data.bet_options || [];
+
+        if (!rec) {
+            bettingBlock.style.display = "none";
+            return;
+        }
+
+        bettingBlock.style.display = "block";
+
+        if (rec.action === "check-fold" || rec.percent_of_pot == null) {
+            betMainLine.textContent = "Recommended line: " + rec.action.toUpperCase() +
+                (rec.label ? " — " + rec.label : "");
+        } else {
+            const pct = Math.round(rec.percent_of_pot * 100);
+            const amt = rec.amount != null ? rec.amount.toFixed(2) : null;
+            betMainLine.textContent =
+                `Recommended line: Bet ${pct}% pot` +
+                (amt ? ` (~$${amt})` : "") +
+                (rec.label ? ` — ${rec.label}` : "");
+        }
+
+        if (!opts.length) {
+            betOptionsList.innerHTML = "";
+            return;
+        }
+
+        let html = "<div>Other options:</div><ul>";
+        opts.forEach(o => {
+            if (o.action === "check" && o.percent_of_pot == null) {
+                html += `<li>Check — ${o.description}</li>`;
+            } else if (o.percent_of_pot != null) {
+                const pct = Math.round(o.percent_of_pot * 100);
+                const amt = o.amount != null ? o.amount.toFixed(2) : null;
+                html += `<li>Bet ${pct}% pot` +
+                    (amt ? ` (~$${amt})` : "") +
+                    ` — ${o.description}</li>`;
+            }
+        });
+        html += "</ul>";
+        betOptionsList.innerHTML = html;
+    }
+
+    function renderPostflopAnalysis(streetLabel, data) {
+        lastPostflopJson = data;
+
+        analysisTitle.textContent = streetLabel + " analysis";
+        renderActionChip(data.action);
+
+        if (typeof data.hero_equity === "number") {
+            equityRow.style.display = "flex";
+            heroEquityEl.textContent = formatPct(data.hero_equity);
+            villainEquityEl.textContent = formatPct(data.villain_equity);
+            tieEquityEl.textContent = formatPct(data.tie);
+        } else {
+            equityRow.style.display = "none";
+        }
+
+        if (data.hand_label) {
+            handLabelLine.style.display = "block";
+            handLabelEl.textContent = data.hand_label;
+        } else {
+            handLabelLine.style.display = "none";
+        }
+
+        const groups = data.draws || {};
+        const groupNames = ["straight", "flush", "full_house", "quads", "straight_flush", "other"];
+
+        const groupLabels = {
+            straight: "Straight draws",
+            flush: "Flush draws",
+            full_house: "Full house",
+            quads: "Quads",
+            straight_flush: "Straight flush",
+            other: "Other improvements"
+        };
+
+        drawsLayout.innerHTML = "";
+        let anyDraws = false;
+
+        groupNames.forEach(groupKey => {
+            const arr = groups[groupKey];
+            if (!arr || !arr.length) return;
+            anyDraws = true;
+
+            const groupDiv = document.createElement("div");
+            groupDiv.className = "draw-group";
+
+            const header = document.createElement("div");
+            header.className = "draw-group-title";
+            const labelSpan = document.createElement("span");
+            labelSpan.className = "label";
+            labelSpan.textContent = groupLabels[groupKey] || titleCase(groupKey);
+            const countSpan = document.createElement("span");
+            countSpan.className = "count";
+            countSpan.textContent = arr.length + " line" + (arr.length > 1 ? "s" : "");
+            header.appendChild(labelSpan);
+            header.appendChild(countSpan);
+            groupDiv.appendChild(header);
+
+            arr.forEach(draw => {
+                const line = document.createElement("div");
+                line.className = "draw-entry";
+
+                const desc = draw.description || draw.improves_to || "Draw";
+
+                const parts = [];
+                parts.push("<strong>" + desc + "</strong>");
+
+                if (draw.outs && draw.outs > 0) {
+                    parts.push(draw.outs + " outs");
+                }
+
+                const turnP = formatPct(draw.prob_turn);
+                const riverP = formatPct(draw.prob_river);
+                const byRiverP = formatPct(draw.prob_by_river);
+
+                const probParts = [];
+                if (turnP) probParts.push("turn: " + turnP);
+                if (riverP && draw.prob_turn != null && draw.prob_by_river == null) {
+                    probParts.push("river: " + riverP);
+                } else if (riverP && draw.prob_by_river != null) {
+                    probParts.push("river-only: " + riverP);
+                }
+                if (byRiverP) probParts.push("by river: " + byRiverP);
+
+                if (probParts.length) {
+                    parts.push(probParts.join(" · "));
+                }
+
+                if (draw.runner_runner_combos && draw.runner_runner_combos > 0) {
+                    const rrP = formatPct(draw.runner_runner_prob);
+                    parts.push("backdoor: " + draw.runner_runner_combos + " combos" + (rrP ? " (~" + rrP + ")" : ""));
+                }
+
+                line.innerHTML = parts.join("<br>");
+                groupDiv.appendChild(line);
+            });
+
+            drawsLayout.appendChild(groupDiv);
+        });
+
+        if (anyDraws) {
+            noDrawsMessage.style.display = "none";
+            drawsLayout.classList.remove("hidden");
+        } else {
+            noDrawsMessage.style.display = "block";
+            drawsLayout.classList.add("hidden");
+            noDrawsMessage.textContent = "No straight-or-better draws detected for this street.";
+        }
+
+        renderBetting(data);
+
+        postflopDebug.classList.remove("hidden");
+        postflopJson.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function formatMoney(x) {
+        const v = Number.isFinite(x) ? x : 0;
+        return "$" + v.toFixed(2);
+    }
+
+    function updateSessionDisplay() {
+        sessionHandsEl.textContent = sessionStats.hands.toString();
+        sessionInvestedEl.textContent = formatMoney(sessionStats.totalInvested);
+        sessionWonEl.textContent = formatMoney(sessionStats.totalWon);
+        const net = sessionStats.totalWon - sessionStats.totalInvested;
+        sessionNetEl.textContent = formatMoney(net);
+        sessionNetEl.classList.remove("positive", "negative");
+        if (net > 0.0001) sessionNetEl.classList.add("positive");
+        else if (net < -0.0001) sessionNetEl.classList.add("negative");
+    }
+
+    function addHandToHistory(entry) {
+        if (historyList.classList.contains("empty")) {
+            historyList.classList.remove("empty");
+            historyList.innerHTML = "";
+        }
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "history-item";
+
+        const header = document.createElement("div");
+        header.className = "history-item-header";
+
+        const title = document.createElement("div");
+        title.className = "history-item-title";
+        title.textContent = "Hand #" + entry.index;
+
+        const netEl = document.createElement("div");
+        netEl.className = "history-item-net";
+        const net = entry.net;
+        netEl.textContent = (net >= 0 ? "+" : "") + net.toFixed(2);
+        if (net > 0.0001) netEl.classList.add("positive");
+        else if (net < -0.0001) netEl.classList.add("negative");
+
+        header.appendChild(title);
+        header.appendChild(netEl);
+        wrapper.appendChild(header);
+
+        const body = document.createElement("div");
+        body.className = "history-item-body";
+
+        const hero = entry.hero || "–";
+        const board = entry.board || "–";
+        const action = entry.action ? entry.action.toUpperCase() : "–";
+        const equity = entry.equity != null ? formatPct(entry.equity) : null;
+
+        body.innerHTML =
+            `<div><strong>Hero:</strong> ${hero}</div>` +
+            `<div><strong>Board:</strong> ${board}</div>` +
+            `<div><strong>Action:</strong> ${action}</div>` +
+            (equity ? `<div><strong>Hero equity:</strong> ${equity}</div>` : "");
+
+        wrapper.appendChild(body);
+
+        if (historyList.firstChild) {
+            historyList.insertBefore(wrapper, historyList.firstChild);
+        } else {
+            historyList.appendChild(wrapper);
+        }
+    }
+
+    function resetHand() {
+        heroHandCodes = [];
+        flopBoardCodes = [];
+        turnCardCode = "";
+        riverCardCode = "";
+        lastPostflopJson = null;
+
+        renderCardRow(heroCardsRow, [], 2);
+        renderCardRow(boardFlopRow, [], 3);
+        renderCardRow(boardTurnRow, [], 1);
+        renderCardRow(boardRiverRow, [], 1);
+
+        setStreetLabel("Awaiting Preflop…");
+
+        flopPanel.classList.add("hidden");
+        turnPanel.classList.add("hidden");
+        riverPanel.classList.add("hidden");
+
+        document.getElementById("preflop-form").reset();
+        document.getElementById("flop-form").reset();
+        document.getElementById("turn-form").reset();
+        document.getElementById("river-form").reset();
+
+        preflopSummary.classList.add("hidden");
+        preflopText.textContent = "";
+        preflopJson.textContent = "";
+        preflopDebug.classList.add("hidden");
+
+        analysisTitle.textContent = "No street analyzed yet";
+        actionChip.style.display = "none";
+        equityRow.style.display = "none";
+        handLabelLine.style.display = "none";
+
+        noDrawsMessage.style.display = "block";
+        noDrawsMessage.textContent = "Run a flop, turn, or river spot to see draws & outs.";
+        drawsLayout.innerHTML = "";
+        drawsLayout.classList.add("hidden");
+
+        bettingBlock.style.display = "none";
+        betMainLine.textContent = "";
+        betOptionsList.innerHTML = "";
+
+        postflopDebug.classList.add("hidden");
+        postflopJson.textContent = "";
+
+        heroFlopHidden.value = "";
+        boardFlopHidden.value = "";
+        heroTurnHidden.value = "";
+        boardTurnHidden.value = "";
+        heroRiverHidden.value = "";
+        boardRiverHidden.value = "";
+
+        sessionInvestInput.value = "";
+        sessionWonInput.value = "";
+    }
+
+    sessionRecordBtn.addEventListener("click", () => {
+        const investedVal = parseFloat(sessionInvestInput.value || "0");
+        const wonVal = parseFloat(sessionWonInput.value || "0");
+
+        const invested = Number.isFinite(investedVal) ? investedVal : 0;
+        const won = Number.isFinite(wonVal) ? wonVal : 0;
+        const net = won - invested;
+
+        sessionStats.hands += 1;
+        sessionStats.totalInvested += invested;
+        sessionStats.totalWon += won;
+        updateSessionDisplay();
+
+        const heroStr = (heroHandCodes && heroHandCodes.length) ? heroHandCodes.join(" ") : "";
+        const boardArr = [...flopBoardCodes];
+        if (turnCardCode) boardArr.push(turnCardCode);
+        if (riverCardCode) boardArr.push(riverCardCode);
+        const boardStr = boardArr.join(" ");
+
+        const equity = lastPostflopJson && typeof lastPostflopJson.hero_equity === "number"
+            ? lastPostflopJson.hero_equity
+            : null;
+        const action = lastPostflopJson && lastPostflopJson.action
+            ? lastPostflopJson.action
+            : null;
+
+        const entry = {
+            index: sessionStats.hands,
+            hero: heroStr,
+            board: boardStr,
+            equity: equity,
+            action: action,
+            net: net,
+        };
+        handHistory.push(entry);
+        addHandToHistory(entry);
+
+        resetHand();
+    });
+
+    updateSessionDisplay();
+
+    const preflopForm = document.getElementById("preflop-form");
+    const flopForm = document.getElementById("flop-form");
+    const turnForm = document.getElementById("turn-form");
+    const riverForm = document.getElementById("river-form");
+
+    preflopForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(preflopForm);
+
+        const rawHand = formData.get("hand") || "";
+        heroHandCodes = parseCardStringToCodes(rawHand);
+        renderCardRow(heroCardsRow, heroHandCodes, 2);
+
+        try {
+            const response = await fetch("/simple-advise", {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+
+            preflopSummary.classList.remove("hidden");
+            const action = (data.action || "").toUpperCase();
+            preflopText.innerHTML =
+                `<strong>Action:</strong> ${action}` +
+                (data.reason ? ` &nbsp; <span class="muted">(${data.reason})</span>` : "");
+
+            preflopJson.textContent = JSON.stringify(data, null, 2);
+            preflopDebug.classList.remove("hidden");
+
+            heroFlopHidden.value = heroHandCodes.join(" ");
+            heroTurnHidden.value = heroHandCodes.join(" ");
+            heroRiverHidden.value = heroHandCodes.join(" ");
+
+            flopPanel.classList.remove("hidden");
+            setStreetLabel("Ready for flop…");
+        } catch (err) {
+            console.error("Preflop error:", err);
+            preflopSummary.classList.remove("hidden");
+            preflopText.textContent = "Error getting preflop advice.";
+        }
+    });
+
+    flopForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const flopInput = document.getElementById("flop_input").value || "";
+        flopBoardCodes = parseCardStringToCodes(flopInput);
+        renderCardRow(boardFlopRow, flopBoardCodes, 3);
+
+        boardFlopHidden.value = flopBoardCodes.join(" ");
+
+        const formData = new FormData(flopForm);
+
+        try {
+            const response = await fetch("/street-advise", {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+
+            setStreetLabel("Flop");
+            renderPostflopAnalysis("Flop", data);
+            turnPanel.classList.remove("hidden");
+        } catch (err) {
+            console.error("Flop error:", err);
+        }
+    });
+
+    turnForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const tCardStr = (document.getElementById("turn_input").value || "").trim();
+        const parsed = parseCardCode(tCardStr);
+        turnCardCode = parsed ? parsed.code : "";
+        if (turnCardCode) {
+            renderCardRow(boardTurnRow, [turnCardCode], 1);
+        }
+
+        const fullBoard = [...flopBoardCodes];
+        if (turnCardCode) fullBoard.push(turnCardCode);
+        boardTurnHidden.value = fullBoard.join(" ");
+
+        const formData = new FormData(turnForm);
+
+        try {
+            const response = await fetch("/street-advise", {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+
+            setStreetLabel("Turn");
+            renderPostflopAnalysis("Turn", data);
+            riverPanel.classList.remove("hidden");
+        } catch (err) {
+            console.error("Turn error:", err);
+        }
+    });
+
+    riverForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const rCardStr = (document.getElementById("river_input").value || "").trim();
+        const parsed = parseCardCode(rCardStr);
+        riverCardCode = parsed ? parsed.code : "";
+        if (riverCardCode) {
+            renderCardRow(boardRiverRow, [riverCardCode], 1);
+        }
+
+        const fullBoard = [...flopBoardCodes];
+        if (turnCardCode) fullBoard.push(turnCardCode);
+        if (riverCardCode) fullBoard.push(riverCardCode);
+        boardRiverHidden.value = fullBoard.join(" ");
+
+        const formData = new FormData(riverForm);
+
+        try {
+            const response = await fetch("/street-advise", {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+
+            setStreetLabel("River");
+            renderPostflopAnalysis("River", data);
+        } catch (err) {
+            console.error("River error:", err);
+        }
+    });
+</script>
+
+</body>
+</html>
