@@ -1,1 +1,29 @@
 
+                     ┌────────────────────────┐
+                     │      User Browser      │
+                     │ (poker-app URL on ACA) │
+                     └───────────┬────────────┘
+                                 │
+                                 ▼
+                    ┌───────────────────────────┐
+                    │   Azure Container App      │
+                    │  (FastAPI + Poker Logic)   │
+                    └───────────┬────────────────┘
+                                 │ pulls image
+                                 ▼
+               ┌─────────────────────────────────────┐
+               │ Azure Container Registry (ACR)       │
+               │ pokerregistrywh.azurecr.io           │
+               └─────────────────────────────────────┘
+                                 │ built from
+                                 ▼
+                 ┌────────────────────────────────┐
+                 │       Docker Image (Local)      │
+                 │ docker build → docker push      │
+                 └────────────────────────────────┘
+                                 │ uses
+                                 ▼
+             ┌─────────────────────────────────────────┐
+             │ Poker Advisor Codebase                  │
+             │ FastAPI, equity sim, ranges, utils      │
+             └─────────────────────────────────────────┘
