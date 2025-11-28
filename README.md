@@ -21,7 +21,37 @@ Course Concept(s)
 
   Github: managing the workflow codebase using git workflows.
 
+ DATA:
+   PreFlop hand ranges (Data/ranges/*json): this proves categorized hand groups, JSON, ~5 KB tota
 
+   Simulation assets(random/*tests/*): Used for equity testing and oppenent range, JSON plus Python scripts used, simulation < 10 KB
+
+  Card images: Local image used for display and testing, PNG/JPG used, < 100 KB
+
+  There were not external datasets used. All the game logic was programmated generated.
+
+MODELS:
+  eval7 Poker engine: Computes card equity, hand strength, and simulates outcomes using Monte-Carlo permutation. Used python, MIT License
+
+  Custom preflop decision model: Uses grouping logic + equity simulation to recommend fold/call/raise. Uses pyhtong, self devolped 
+
+  Range loader: Cleans card inputs, validates rank/suit, loads JSON range files. It uses python, self devloped
+
+  Equity Simulation: Runs random opponent simulations to estimate win probability. Uses a mix of eval7 backend and python, MIT with a mix of self development
+
+SERVICES:
+
+  FastAPI on the backend: Rproved rest for endpoints: hand input, equity, calculations, preflop advice
+
+  Azure Container Apps:Cloud deployment environment for the containerized API
+
+  Azure Container Registry (ACR): Stores Docker image (poker-advisor:v1) built from project Dockerfile
+
+  HTML Front-End UI: Simple web interface for sending hand input to API
+
+  Docker Runtime: Provides reproducible environment, dependencies, and server configuration
+
+  
 3) How to Run (Local)
 
 Per the assignment template on page 2 of the PDF ("Choose Docker or Apptainer and provide a single command"
