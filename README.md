@@ -4,55 +4,22 @@
 1) Executive Summary
 Problem
 
-Most new and intermediate poker players struggle to make mathematically sound decisions during preflop and postflop situations. Human intuition is unreliable, and existing tools are either too complex or require expensive subscriptions. The problem is providing fast, accurate, and accessible probability-based poker advice for players who want to improve their game without needing to understand deep game theory.
+The Probalem that we are looking to solve here with this app is that there are many poker players who are making the wrong descions or simply want to study the correct poker moves but are unsure. Current poker players are unable to compute all the different outcomes in their head as their are manyranges and different scernarios to acccount for.
 
 Solution
 
-Poker Advisor is a lightweight web application that uses simulated equity analysis, hand-range modeling, and probability calculations to give players real-time betting recommendations. The backend is built with FastAPI, packaged using Docker, and deployed as a cloud-hosted Azure Container App with a public, stable URL. Users enter their hole cards, opponent type, and betting situation, and the system returns win probability, expected value (EV), and an actionable “Fold / Call / Raise” recommendation. The project demonstrates system design, containerization, deployment, and cloud compute concepts in a beginner-friendly, production-style workflow.
+Poker Advisor is a lightweight, easy to use service that will help poker players make the correct descions. This site is able to give players real time reccomendations based on thier hand equity simulatiosn and opppent range modeling. You simply enter youre cards and other varaibles the site is able to show you the correct descions to make based on youre expected value. The result is an easy-to-use tool that brings data-driven poker strategy to anyone, without needing technical or mathematical expertise.
 
 2) System Overview
 Course Concept(s)
 
-This project uses several concepts from Systems I:
+  Docker/FAST API: Building a reproducible environment for the FastAPI application.
 
-APIs & Microservices – FastAPI backend serving JSON responses
+  Cloud (Azure): We deployed a containerized service using the azure Container apps.
 
-Containerization (Docker) – Reproducible runtime environments
+  API/Webservices: We ran a https api that can accpet user inputs/ouputs that can run both locally and on cloud.
 
-Cloud Deployment – Azure Container Apps (managed environment + ACR)
-
-Simulation & Modeling – Monte-Carlo equity simulations
-
-Version Control & Reproducibility – GitHub repo hosting all files
-
-                         ┌────────────────────────┐
-                         │      User Browser      │
-                         │ (poker-app URL on ACA) │
-                         └───────────┬────────────┘
-                                     │
-                                     ▼
-                        ┌───────────────────────────┐
-                        │   Azure Container App      │
-                        │  (FastAPI + Poker Logic)   │
-                        └───────────┬────────────────┘
-                                     │ pulls image
-                                     ▼
-                   ┌─────────────────────────────────────┐
-                   │ Azure Container Registry (ACR)       │
-                   │ pokerregistrywh.azurecr.io           │
-                   └─────────────────────────────────────┘
-                                     │ built from
-                                     ▼
-                     ┌────────────────────────────────┐
-                     │       Docker Image (Local)      │
-                     │ docker build → docker push      │
-                     └────────────────────────────────┘
-                                     │ uses
-                                     ▼
-                 ┌─────────────────────────────────────────┐
-                 │ Poker Advisor Codebase                  │
-                 │ FastAPI, equity sim, ranges, utils      │
-                 └─────────────────────────────────────────┘
+  Github: managing the workflow codebase using git workflows.
 
 
 3) How to Run (Local)
