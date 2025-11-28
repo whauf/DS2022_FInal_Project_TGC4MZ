@@ -86,31 +86,68 @@ ACR + system-assigned identity for secure container pulls
 
 5) Cloud Deployment (Extra Credit)
 
-   az group create --name poker-rg --location northcentralus
-az acr create --resource-group poker-rg --name pokerregistrywh --sku Basic
-az acr login --name pokerregistrywh
+Log Into Azure 
+  az login
 
-docker build -t poker-advisor .
-docker tag poker-advisor pokerregistrywh.azurecr.io/poker-advisor:v1
-docker push pokerregistrywh.azurecr.io/poker-advisor:v1
+Create Resource Group
+  az group create --name poker-test-rg --location northcentralus
 
-az provider register --namespace Microsoft.App --wait
-az provider register --namespace Microsoft.OperationalInsights --wait
+Create Azure Container Registry (ACR)
 
-az containerapp env create \
-  --name poker-env \
-  --resource-group poker-rg \
-  --location northcentralus
+  az acr create \
+    --resource-group poker-test-rg \
+    --name pokerregistrytestwh \
+    --sku Basic \
+    --location northcentralus
+    
+Log in to the new registry
 
-az containerapp create \
-  --name poker-app \
-  --resource-group poker-rg \
-  --environment poker-env \
-  --image pokerregistrywh.azurecr.io/poker-advisor:v1 \
-  --target-port 8000 \
-  --ingress external \
-  --registry-server pokerregistrywh.azurecr.io \
-  --registry-identity system
+  az acr login --name pokerregistrytestwh
+
+Build + Tag + Push Docker image
+
+  docker build -t poker-advisor-test .
+
+  docker tag poker-advisor-test pokerregistrytestwh.azurecr.io/poker-advisor:v2
+
+  docker push pokerregistrytestwh.azurecr.io/poker-advisor:v2
+
+Ensure required Azure providers
+
+  az provider register --namespace Microsoft.App --wait
+  az provider register --namespace Microsoft.OperationalInsights --wait
+
+Create a NEW Container App environment
+
+  az containerapp env create \
+    --name poker-test-env \
+    --resource-group poker-test-rg \
+    --location northcentralus
+
+Deploy the app
+  az containerapp create \
+    --name poker-test-app \
+    --resource-group poker-test-rg \
+    --environment poker-test-env \
+    --image pokerregistrytestwh.azurecr.io/poker-advisor:v2 \
+    --target-port 8000 \
+    --ingress external \
+    --registry-server pokerregistrytestwh.azurecr.io \
+    --registry-identity system
+
+Get the Pulbic URL
+    az containerapp show \
+      --name poker-test-app \
+      --resource-group poker-test-rg \
+      --query properties.configuration.ingress.fqdn \
+      --output tsv
+
+Will Output Something like this
+  poker-test-app.redcoast-xxxxxx.northcentralus.azurecontainerapps.io
 
 
+
+
+
+  
 
