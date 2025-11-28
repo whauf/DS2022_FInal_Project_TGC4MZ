@@ -4,11 +4,11 @@
 1) Executive Summary
 Problem
 
-The Probalem that we are looking to solve here with this app is that there are many poker players who are making the wrong descions or simply want to study the correct poker moves but are unsure. Current poker players are unable to compute all the different outcomes in their head as their are manyranges and different scernarios to acccount for.
+The ploblem that we are looking to solve here with this app is that there are many poker players who are making the wrong decisions or simply want to study the correct poker moves but are unsure. Current poker players are unable to compute all the different outcomes in their head as their are many ranges and different scenarios to acccount for.
 
 Solution
 
-Poker Advisor is a lightweight, easy to use service that will help poker players make the correct descions. This site is able to give players real time reccomendations based on thier hand equity simulatiosn and opppent range modeling. You simply enter youre cards and other varaibles the site is able to show you the correct descions to make based on youre expected value. The result is an easy-to-use tool that brings data-driven poker strategy to anyone, without needing technical or mathematical expertise.
+Poker Advisor is a lightweight, easy to use service that will help poker players make the correct decisions. This site is able to give players real time recomendations based on their hand equity simulations and oppenent range modeling. You simply enter youre cards and other variables the site is able to show you the correct decisions to make based on your expected value. The result is an easy-to-use tool that brings data-driven poker strategy to anyone, without needing technical or mathematical expertise.
 
 2) System Overview
 Course Concept(s)
@@ -17,33 +17,33 @@ Course Concept(s)
 
   Cloud (Azure): We deployed a containerized service using the azure Container apps.
 
-  API/Webservices: We ran a https api that can accpet user inputs/ouputs that can run both locally and on cloud.
+  API/Webservices: We ran a https api that can accept user inputs/outputs that can run both locally and on cloud.
 
   Github: managing the workflow codebase using git workflows.
 
  DATA:
-   PreFlop hand ranges (Data/ranges/*json): this proves categorized hand groups, JSON, ~5 KB tota
+   PreFlop hand ranges (Data/ranges/*json): this proves categorized hand groups, JSON, ~5 KB total
 
-   Simulation assets(random/*tests/*): Used for equity testing and oppenent range, JSON plus Python scripts used, simulation < 10 KB
+   Simulation assets(random/*tests/*): Used for equity testing and opponent range, JSON plus Python scripts used, simulation < 10 KB
 
   Card images: Local image used for display and testing, PNG/JPG used, < 100 KB
 
-  There were not external datasets used. All the game logic was programmated generated.
+  There were not external datasets used. All the game logic was programmed generated.
 
 MODELS:
   eval7 Poker engine: Computes card equity, hand strength, and simulates outcomes using Monte-Carlo permutation. Used python, MIT License
 
-  Custom preflop decision model: Uses grouping logic + equity simulation to recommend fold/call/raise. Uses pyhtong, self devolped 
+  Custom preflop decision model: Uses grouping logic + equity simulation to recommend fold/call/raise. Uses python, self developed 
 
-  Range loader: Cleans card inputs, validates rank/suit, loads JSON range files. It uses python, self devloped
+  Range loader: Cleans card inputs, validates rank/suit, loads JSON range files. It uses python, self developed
 
   Equity Simulation: Runs random opponent simulations to estimate win probability. Uses a mix of eval7 backend and python, MIT with a mix of self development
 
 SERVICES:
 
-  FastAPI on the backend: Rproved rest for endpoints: hand input, equity, calculations, preflop advice
+  FastAPI on the backend: Reproved rest for endpoints: hand input, equity, calculations, preflop advice
 
-  Azure Container Apps:Cloud deployment environment for the containerized API
+  Azure Container Apps: Cloud deployment environment for the containerized API
 
   Azure Container Registry (ACR): Stores Docker image (poker-advisor:v1) built from project Dockerfile
 
