@@ -54,11 +54,19 @@ SERVICES:
   
 3) How to Run (Local)
 
-Per the assignment template on page 2 of the PDF ("Choose Docker or Apptainer and provide a single command"
+Before Running code make sure youre Docker app is open.
 
-docker build -t poker-advisor .
-docker run --rm -p 8000:8000 poker-advisor
-curl http://localhost:8080/health
+docker build -t poker-advisor:latest .
+docker run -p 8000:8000 poker-advisor:latest
+
+You should see 
+http://localhost:8000
+Once you see this you can copy into browser to use locally.
+
+Health test (Optional)
+Visit this page but typing into local browser
+http://localhost:8000/docs
+
 
 4) Design Decisions
 
