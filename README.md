@@ -132,6 +132,15 @@ Tests:
 
 C. Test_ranges.py. cd tests then python3.11 -m pytest test_ranges.py -q which should print out 1 passed
 
+6. What’s Next
+
+    Going forwards, the main aspect that could be improved is the implemenation of postflop adivce as well as inclduing more complex modeling such as GTO solver which would be the end goal for the service. GTO is the key to poker strategy and would allow for a more robust and complete poker advisor. Being a GTO solver would create the ability to provide advice on all streets and be able to adjust to different opponent types. A strech feature I would like the ability to add is multi opponent modeling so that the user can input more than one opponent and get a more accurate equity estimate based on multiple players at the table.
+
+7. links
+
+  Github: https://github.com/whauf/poker-advisor
+  Public Cloud App: poker-test-app.kindpebble-8f192353.northcentralus.azurecontainerapps.io
+
 
 
 Cloud Deployment (Extra Credit)
