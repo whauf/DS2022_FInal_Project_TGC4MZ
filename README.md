@@ -125,7 +125,13 @@ Input validation:
   Health check: /health endpoint reliably returns service readiness.
   Load testing: Service remained stable under repeated bursts of 20–50 sequential requests.
 
-Tests: One test that runs is the test_equity_smoke which is to make sure the service is not on fire, hence the name smoke test. All this test does is test the approximat equity of AAs and the basic correctness of the Monte carlo engine. There is also test_range_files_load which is meant to ensure that the JSON files have loaded in correct and there is not a invalid submission
+Tests: 
+ A. The first test in the project is smoke_check.py which can be ran by running cd tests then python3.11 smoke_check.py in the terminal which should output AA equity with a green check mark signifiying that it passed the smoke test and it is running correctly.
+
+ B. The second test in the project is the deterministic test which can be rean by pasting cd test then  python3.11 -m pytest test_deterministic.py -q in the terminal
+
+C. Test_ranges.py. cd tests then python3.11 -m pytest test_ranges.py -q which should print out 1 passed
+
 
 
 Cloud Deployment (Extra Credit)
