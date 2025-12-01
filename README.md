@@ -125,6 +125,7 @@ Input validation:
   Health check: /health endpoint reliably returns service readiness.
   Load testing: Service remained stable under repeated bursts of 20–50 sequential requests.
 
+Tests: One test that runs is the test_equity_smoke which is to make sure the service is not on fire, hence the name smoke test. All this test does is test the approximat equity of AAs and the basic correctness of the Monte carlo engine. There is also test_range_files_load which is meant to ensure that the JSON files have loaded in correct and there is not a invalid submission
 
 
 Cloud Deployment (Extra Credit)
